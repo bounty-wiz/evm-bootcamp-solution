@@ -1,0 +1,90 @@
+1. What is an RPC endpoint, and why does every Ethereum application need one?
+
+An RPC endpoint is the network interface to an Ethereum node.
+Every Ethereum application needs one because all reads and writes (balances, blocks, contract calls, transactions) must go through a node that exposes the Ethereum JSON-RPC API.
+
+Without an RPC endpoint:
+	•	you cannot read state
+	•	you cannot send transactions
+	•	you cannot interact with smart contracts
+
+⸻
+
+2. What’s the difference between Ethereum itself and the data you get back from an RPC call?
+	•	Ethereum itself is the decentralized network + protocol.
+	•	RPC data is a view of Ethereum as seen by a specific node implementation, at a specific time, with specific pruning, caching, and sync assumptions.
+
+RPC responses are not canonical truth — consensus rules are.
+
+⸻
+
+3. Why can two RPC providers return different results for the same request?
+
+Because providers may differ in:
+	•	node client (Geth vs Nethermind vs Erigon)
+	•	pruning strategy
+	•	sync lag
+	•	caching layers
+	•	rate limiting behavior
+	•	trace/debug support
+	•	internal load balancing
+
+They follow consensus rules, but their local data availability differs.
+
+⸻
+
+4. What are the main differences between a full node and an archive node?
+	•	Full node:
+	•	stores recent state only
+	•	prunes old historical state
+	•	may fail historical eth_call or debug_traceCall
+	•	Archive node:
+	•	stores every historical state
+	•	can answer state queries for any block instantly
+	•	required for deep historical analysis
+
+⸻
+
+5. Why can a full node usually not perform debug_traceCall on old blocks?
+
+Because the historical state was pruned.
+Tracing requires exact past state; without it, the node cannot replay execution correctly.
+
+⸻
+
+6. What data does a light client store, and why is it useful?
+
+Light clients store:
+	•	block headers only
+
+They are useful because:
+	•	extremely low storage
+	•	fast startup
+	•	can verify correctness using cryptographic proofs
+
+They do not execute contracts or store state.
+
+⸻
+
+7. Why do most developers use node providers instead of running their own nodes?
+
+Because running nodes requires:
+	•	large storage
+	•	constant uptime
+	•	upgrades for hard forks
+	•	monitoring and security
+	•	handling rate limits and scaling
+
+Node providers abstract all of that.
+
+⸻
+
+8. What is the difference between execution-layer RPC and consensus-layer RPC?
+	•	Execution RPC (eth_*):
+	•	balances, transactions, logs, contract calls
+	•	used by dApps and smart contract developers
+	•	Consensus RPC (beacon / validator APIs):
+	•	validator duties
+	•	attestations
+	•	finality
+	•	used by node operators, not dApps

@@ -1,0 +1,43 @@
+1. If your bot fails because “the state for this block is unavailable”, what’s the most likely cause?
+
+You are querying historical state on a non-archive node.
+The node pruned that state and cannot reconstruct it.
+
+⸻
+
+2. If you need guaranteed access to deep historical state, which node type must you use?
+
+An archive node.
+
+⸻
+
+3. Why are bots and aggregators usually connected to multiple RPC providers at once?
+
+To:
+	•	avoid downtime
+	•	bypass rate limits
+	•	compare responses
+	•	reduce risk of stale or missing data
+	•	fail over automatically
+
+Production systems never trust a single RPC.
+
+⸻
+
+4. Your script gets rate-limited on a provider’s public endpoint. What are your options?
+	•	upgrade to a paid plan
+	•	add multiple providers
+	•	self-host a node
+	•	batch requests
+	•	cache aggressively
+	•	slow down request rate
+
+⸻
+
+5. What is the risk of relying only on a single RPC provider in production?
+	•	outages break your app
+	•	rate limits halt your system
+	•	inconsistent data goes unnoticed
+	•	censorship or filtering can affect results
+
+Single RPC = single point of failure.

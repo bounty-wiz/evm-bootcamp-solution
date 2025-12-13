@@ -1,0 +1,34 @@
+Create Your own RPC Provider Account
+1. Sign up to chain stack with this referral link: https://chainstack.referral-factory.com/utEeEoQh
+
+2. query tx id 0x3ddb88c591780890caeb206ad42178355390fed78e4e240d1790148fb47815af:
+
+blockHash            0xa47524b476b950feda0ce30178e2a154bf4d24946f888a26a28ccd0e2e557864
+blockNumber          23909255
+from                 0xdadB0d80178819F2319190D340ce9A924f783711
+transactionIndex     167
+effectiveGasPrice    35513382
+
+accessList           []
+chainId              1
+gasLimit             21000
+hash                 0x3ddb88c591780890caeb206ad42178355390fed78e4e240d1790148fb47815af
+input                0x
+maxFeePerGas         35513382
+maxPriorityFeePerGas 0
+nonce                1840790
+r                    0x43ac1d0549d83e8d3d0a9c6e58b26e59e1515937ca6fd69f25cd76b9bee68504
+s                    0x65dab338e038451e407ca4c8c83f607414e4cabfdb71fed3507b48de56c85bec
+to                   0x57242984F35629c7B4E901071C12e4b09323c151
+type                 2
+value                6312387241239166
+yParity              0
+
+3. Query address 0xdadB0d80178819F2319190D340ce9A924f783711 balance on block 23909255
+
+balance: 98241549987614569140 = 98.24154998761456914 ETH
+
+
+4. Query block by number 23909255:
+
+Number of transactions: 168
