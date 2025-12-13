@@ -1,0 +1,34 @@
+ACCOUNTS — Check Your Understanding
+
+1. What is the main difference between an EOA and a contract account?
+	•	EOA (Externally Owned Account): controlled by a private key
+	•	Contract account: controlled by code executed by the EVM
+
+EOAs initiate transactions; contracts cannot on their own.
+
+⸻
+
+2. Which account fields can change over time? Which one cannot?
+
+Can change:
+	•	balance
+	•	nonce
+	•	storageRoot
+
+Cannot change:
+	•	codeHash
+
+⸻
+
+3. Why is codeHash immutable, and what practical consequence does that have for bugs?
+
+codeHash is immutable because deployed contract code cannot be altered.
+Practical consequence: bugs in deployed contracts are permanent, requiring redeployment or proxy patterns to fix.
+
+⸻
+
+4. What happens to an EOA’s nonce when it sends a transaction?
+
+The nonce increments by 1 after each transaction, ensuring:
+	•	correct transaction ordering
+	•	protection against replay attacks

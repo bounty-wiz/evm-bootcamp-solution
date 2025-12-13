@@ -1,0 +1,31 @@
+MERKLE TREES — Check Your Understanding
+
+1. What happens to the root hash if you change one byte in one leaf of a Merkle tree?
+
+Changing one byte in a leaf changes that leaf’s hash, which then changes every parent hash up to the root.
+As a result, the root hash becomes completely different (avalanche effect).
+
+
+2. Why does Ethereum store only the root hash of a trie in the block header instead of the entire dataset?
+
+Because the root hash cryptographically commits to the entire dataset.
+Storing only the root:
+	•	keeps block headers small
+	•	allows verification of any part of the data using proofs
+	•	avoids duplicating massive state data in every block
+
+
+3. What problem do Merkle proofs solve?
+
+Merkle proofs allow someone to prove that a specific piece of data is included in a large dataset without revealing or downloading the entire dataset.
+
+
+4. How does a Merkle tree help light clients verify data without downloading everything?
+
+A light client receives:
+	•	the block header (containing the root hash)
+	•	a Merkle proof for specific data
+
+Using the proof, it can verify inclusion cryptographically, without storing the full state or history.
+
+⸻

@@ -1,0 +1,35 @@
+ETHEREUM STATE — Check Your Understanding
+
+1. What is “Ethereum’s world state” in your own words?
+
+The world state is the current snapshot of all accounts in Ethereum, including:
+	•	balances
+	•	nonces
+	•	contract code
+	•	contract storage
+
+It represents “who owns what and what contracts currently store”.
+
+⸻
+
+2. Why isn’t the world state stored directly on the blockchain?
+
+Because it’s extremely large and constantly changing.
+Instead, Ethereum stores a cryptographic commitment (the state root) so nodes can reconstruct and verify the state without bloating blocks.
+
+⸻
+
+3. When does the world state change?
+
+The world state changes every time a transaction is executed and modifies:
+	•	balances
+	•	nonces
+	•	contract storage
+	•	contract creation
+
+⸻
+
+4. What does the stateRoot in a block header represent?
+
+The stateRoot is the root hash of the state trie after all transactions in that block have been executed.
+It uniquely commits to the entire Ethereum world state at that block.

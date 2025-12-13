@@ -1,0 +1,45 @@
+TRANSACTIONS — Check Your Understanding
+
+1. What are the three conceptual types of transactions in Ethereum?
+	1.	Value transfer (ETH only)
+	2.	Contract call
+	3.	Contract creation
+
+⸻
+
+2. What does the to field mean for:
+
+a) value transfers
+→ recipient EOA or contract address
+
+b) contract calls
+→ target contract address
+
+c) contract creation
+→ empty (null / 0x)
+
+⸻
+
+3. What is the purpose of the nonce field?
+
+The nonce:
+	•	enforces transaction ordering per sender
+	•	prevents replay of old transactions
+	•	ensures each transaction is unique
+
+⸻
+
+4. What role do the fields v, r, and s play?
+
+They form the ECDSA signature proving that the transaction was authorized by the sender’s private key.
+From them, the sender address can be recovered.
+
+⸻
+
+5. What does the data field contain when interacting with a contract?
+
+The data field contains:
+	•	the function selector (first 4 bytes)
+	•	ABI-encoded function arguments
+
+This tells the contract which function to execute and with what parameters.
