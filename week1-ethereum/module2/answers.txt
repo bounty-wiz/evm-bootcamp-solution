@@ -1,0 +1,177 @@
+Basic Understanding
+
+1. What are the two layers of Ethereum after The Merge, and what is the main responsibility of each?
+	•	Execution Layer (EL):
+	•	Executes transactions and smart contracts
+	•	Maintains accounts, balances, contract storage
+	•	Manages the mempool and transaction execution
+	•	Consensus Layer (CL):
+	•	Runs Proof-of-Stake
+	•	Chooses block proposers and validators
+	•	Finalizes blocks and orders them canonically
+
+⸻
+
+2. Why was Ethereum split into an Execution Layer and a Consensus Layer?
+
+To separate concerns:
+	•	Execution logic (EVM, state, gas) evolves independently
+	•	Consensus logic (PoS, fork choice, finality) evolves independently
+
+This makes Ethereum:
+	•	easier to upgrade
+	•	safer to modify
+	•	more modular and resilient
+
+⸻
+
+3. Does the Consensus Layer execute smart contracts? Why or why not?
+
+No.
+
+The Consensus Layer:
+	•	does not understand EVM, gas, or contracts
+	•	only handles block ordering and finality
+
+Smart contract execution requires:
+	•	state access
+	•	gas accounting
+	•	EVM semantics
+—all of which live in the Execution Layer.
+
+⸻
+
+4. Which layer maintains the mempool?
+
+The Execution Layer.
+
+Mempools contain transactions, and only the EL:
+	•	validates transactions
+	•	executes them
+	•	checks gas, nonce, balance, signatures
+
+⸻
+
+5. What is a “client pair,” and why do nodes need one?
+
+A client pair is:
+	•	1 Execution client (e.g. Geth, Nethermind)
+	•	1 Consensus client (e.g. Prysm, Lighthouse)
+
+Nodes need both because:
+	•	EL handles execution
+	•	CL handles consensus
+	•	neither can function alone post-Merge
+
+They communicate via the Engine API.
+
+⸻
+
+6. What does the Execution Layer produce that the Consensus Layer wraps into a beacon block?
+
+An Execution Payload, which includes:
+	•	transactions
+	•	receipts
+	•	gas usage
+	•	stateRoot
+	•	transactionsRoot
+	•	receiptsRoot
+
+The CL wraps this payload into a beacon block and finalizes it.
+
+⸻
+
+7. How often is a validator chosen to propose a block?
+
+Every 12 seconds (one slot).
+
+Each slot:
+	•	one validator is chosen to propose
+	•	others attest
+
+⸻
+
+8. True or false: There is a single global mempool shared by all nodes.
+
+False.
+
+Each node maintains its own local mempool.
+
+⸻
+
+Engineering-Level Questions
+
+9. Why does modularity help Ethereum upgrade faster?
+
+Because upgrades can:
+	•	target EL or CL independently
+	•	avoid touching unrelated logic
+	•	reduce blast radius of bugs
+
+Example:
+	•	The Merge replaced PoW with PoS without changing the EVM
+
+⸻
+
+10. When a new block is received, what does the Execution Layer validate?
+
+The EL validates:
+	•	transaction signatures
+	•	nonces
+	•	balances
+	•	gas limits
+	•	correct EVM execution
+	•	resulting stateRoot
+
+If execution is wrong → block is invalid.
+
+⸻
+
+11. When a new block is received, what does the Consensus Layer validate?
+
+The CL validates:
+	•	proposer is correct for the slot
+	•	signatures and attestations
+	•	fork choice rules
+	•	finality rules
+	•	that the EL-approved execution payload hash matches
+
+The CL does not re-execute transactions.
+
+⸻
+
+12. Why does each node’s mempool look slightly different?
+
+Because:
+	•	transactions propagate via gossip
+	•	network latency differs
+	•	nodes have different policies (fee thresholds, spam filters)
+	•	some txs are dropped or replaced locally
+
+There is no synchronization guarantee.
+
+⸻
+
+13. What happens if the EL marks an Execution Payload as invalid?
+	•	The CL rejects the block
+	•	The proposer can be penalized
+	•	The block is not added to the chain
+
+Consensus depends on EL validity.
+
+⸻
+
+14. Describe the flow of a transaction from eth_sendRawTransaction until it reaches a block.
+	1.	User signs transaction locally
+	2.	Sends it via eth_sendRawTransaction
+	3.	Execution client:
+	•	verifies signature
+	•	checks nonce, balance, gas
+	•	inserts tx into mempool
+	4.	Transaction propagates to other EL nodes
+	5.	A proposer’s EL selects txs from its mempool
+	6.	EL executes txs and builds an Execution Payload
+	7.	CL wraps payload into a beacon block
+	8.	Validators attest
+	9.	Block is finalized
+	10.	Transaction becomes part of canonical chain
