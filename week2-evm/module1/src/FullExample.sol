@@ -1,106 +1,132 @@
-// // SPDX-License-Identifier: MIT
-// pragma solidity 0.8.13;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.13;
 
-// contract TargetContract {
-//     uint256 public storedNumber;
+import "forge-std/console.sol";
 
-//     event Received(address sender, uint256 amount);
-//     event Stored(uint256 number);
+contract TargetContract {
+    uint256 public storedNumber;
 
-//     // Payable function that accepts ETH
-//     function deposit() external payable {
-//         emit Received(msg.sender, msg.value);
-//     }
+    event Received(address sender, uint256 amount);
+    event Stored(uint256 number);
 
-//     // Store a number (state-changing)
-//     function storeNumber(uint256 num) external {
-//         storedNumber = num;
-//         emit Stored(num);
-//     }
+    // Payable function that accepts ETH
+    function deposit() external payable {
+        console.log("  [TargetContract.deposit] msg.sender:", msg.sender);
+        console.log("  [TargetContract.deposit] msg.value:", msg.value);
+        console.log("  [TargetContract.deposit] address(this):", address(this));
+        emit Received(msg.sender, msg.value);
+    }
 
-//     // View function used for staticcall testing
-//     function readNumber() external view returns (uint256) {
-//         return storedNumber;
-//     }
+    // Store a number (state-changing)
+    function storeNumber(uint256 num) external payable {
+        console.log("  [TargetContract.storeNumber] msg.sender:", msg.sender);
+        console.log("  [TargetContract.storeNumber] msg.value:", msg.value);
+        console.log("  [TargetContract.storeNumber] address(this):", address(this));
+        storedNumber = num;
+        emit Stored(num);
+    }
 
-//     // Function that always reverts
-//     function fail() external pure {
-//         revert("TargetContract: failure");
-//     }
-// }
+    // View function used for staticcall testing
+    function readNumber() external view returns (uint256) {
+        return storedNumber;
+    }
 
-// contract MainContract {
-//     event Log(string message, bytes data);
-//     event Received(address sender, uint256 amount);
+    // Function that always reverts
+    function fail() external pure {
+        revert("TargetContract: failure");
+    }
+}
 
-//     uint256 public myNumber;
+contract MainContract {
+    event Log(string message, bytes data);
+    event Received(address sender, uint256 amount);
 
-//     // ===== RECEIVE FUNCTION =====
-//     receive() external payable {
-//         emit Received(msg.sender, msg.value);
-//     }
+    uint256 public myNumber;
 
-//     // ===== FALLBACK FUNCTION =====
-//     fallback() external payable {
-//         emit Log("fallback triggered", msg.data);
-//     }
+    // ===== RECEIVE FUNCTION =====
+    receive() external payable {
+        emit Received(msg.sender, msg.value);
+    }
 
-//     // ===== INTERNAL CALL =====
-//     function _setInternal(uint256 x) internal {
-//         myNumber = x;
-//     }
+    // ===== FALLBACK FUNCTION =====
+    fallback() external payable {
+        emit Log("fallback triggered", msg.data);
+    }
 
-//     function callInternal(uint256 x) external {
-//         _setInternal(x);
-//         emit Log("internal call executed", "");
-//     }
+    // ===== INTERNAL CALL =====
+    function _setInternal(uint256 x) internal {
+        console.log("  [MainContract._setInternal] msg.sender:", msg.sender);
+        console.log("  [MainContract._setInternal] msg.value:", msg.value);
+        console.log("  [MainContract._setInternal] address(this):", address(this));
+        myNumber = x;
+    }
 
-//     // ===== EXTERNAL CALL (CALL) =====
-//     function callStoreNumber(address target, uint256 x) external {
-//         (bool ok, bytes memory data) =
-//             target.call(abi.encodeWithSignature("storeNumber(uint256)", x));
+    function callInternal(uint256 x) external payable {
+        console.log("[MainContract.callInternal] msg.sender:", msg.sender);
+        console.log("[MainContract.callInternal] msg.value:", msg.value);
+        console.log("[MainContract.callInternal] address(this):", address(this));
+        _setInternal(x);
+        emit Log("internal call executed", "");
+    }
 
-//         if (!ok) revert("callStoreNumber failed");
-//         emit Log("CALL storeNumber()", data);
-//     }
+    // ===== EXTERNAL CALL (CALL) =====
+    function callStoreNumber(address target, uint256 x) external payable {
+        console.log("[MainContract.callStoreNumber] msg.sender:", msg.sender);
+        console.log("[MainContract.callStoreNumber] msg.value:", msg.value);
+        console.log("[MainContract.callStoreNumber] address(this):", address(this));
+        (bool ok, bytes memory data) =
+            target.call(abi.encodeWithSignature("storeNumber(uint256)", x));
 
-//     // ===== PAYABLE CALL =====
-//     function callDeposit(address target) external payable {
-//         (bool ok, ) = target.call{value: msg.value}(
-//             abi.encodeWithSignature("deposit()")
-//         );
-//         require(ok, "deposit via call failed");
-//     }
+        if (!ok) revert("callStoreNumber failed");
+        emit Log("CALL storeNumber()", data);
+    }
 
-//     // ===== STATICCALL =====
-//     function staticRead(address target) external view returns (uint256) {
-//         (bool ok, bytes memory data) =
-//             target.staticcall(abi.encodeWithSignature("readNumber()"));
+    // ===== PAYABLE CALL =====
+    function callDeposit(address target) external payable {
+        console.log("[MainContract.callDeposit] msg.sender:", msg.sender);
+        console.log("[MainContract.callDeposit] msg.value:", msg.value);
+        console.log("[MainContract.callDeposit] address(this):", address(this));
+        (bool ok, ) = target.call{value: msg.value}(
+            abi.encodeWithSignature("deposit()")
+        );
+        require(ok, "deposit via call failed");
+    }
 
-//         require(ok, "staticcall failed");
-//         return abi.decode(data, (uint256));
-//     }
+    // ===== STATICCALL =====
+    function staticRead(address target) external view returns (uint256) {
+        (bool ok, bytes memory data) =
+            target.staticcall(abi.encodeWithSignature("readNumber()"));
 
-//     // ===== DELEGATECALL =====
-//     function delegateStoreNumber(address target, uint256 x) external {
-//         (bool ok, ) =
-//             target.delegatecall(abi.encodeWithSignature("storeNumber(uint256)", x));
+        require(ok, "staticcall failed");
+        return abi.decode(data, (uint256));
+    }
 
-//         require(ok, "delegatecall failed");
-//         // Notice: storedNumber in target != affected
-//         // myNumber in THIS CONTRACT *changes* instead.
-//     }
+    // ===== DELEGATECALL =====
+    function delegateStoreNumber(address target, uint256 x) external payable {
+        console.log("[MainContract.delegateStoreNumber] BEFORE delegatecall:");
+        console.log("  msg.sender:", msg.sender);
+        console.log("  msg.value:", msg.value);
+        console.log("  address(this):", address(this));
 
-//     // ===== REVERT BUBBLING =====
-//     function callFail(address target) external {
-//         (bool ok, bytes memory data) =
-//             target.call(abi.encodeWithSignature("fail()"));
+        (bool ok, ) =
+            target.delegatecall(abi.encodeWithSignature("storeNumber(uint256)", x));
 
-//         if (!ok) {
-//             // bubble up the revert reason
-//             assembly {
-//                 revert(add(data, 32), mload(data))
-//             }
-//         }
-//     }
-// }
+        require(ok, "delegatecall failed");
+        console.log("[MainContract.delegateStoreNumber] AFTER delegatecall - context unchanged!");
+        // Notice: storedNumber in target != affected
+        // myNumber in THIS CONTRACT *changes* instead.
+    }
+
+    // ===== REVERT BUBBLING =====
+    function callFail(address target) external {
+        (bool ok, bytes memory data) =
+            target.call(abi.encodeWithSignature("fail()"));
+
+        if (!ok) {
+            // bubble up the revert reason
+            assembly {
+                revert(add(data, 32), mload(data))
+            }
+        }
+    }
+}
